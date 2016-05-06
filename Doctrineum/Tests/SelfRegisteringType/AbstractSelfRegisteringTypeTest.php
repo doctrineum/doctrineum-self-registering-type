@@ -16,7 +16,10 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
     {
         $typeClass = $this->getTypeClass();
         $typeClass::registerSelf();
-        self::assertTrue(Type::hasType($this->getExpectedTypeName()));
+        self::assertTrue(
+            Type::hasType($this->getExpectedTypeName()),
+            "After self-registration the type {$typeClass} has not been found by name {$this->getExpectedTypeName()}"
+        );
     }
 
     /**SomeSelfRegisteringTypeTest:
@@ -69,11 +72,10 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
     public function I_can_get_expected_type_name(Type $type)
     {
         $typeClass = $this->getTypeClass();
-        // like self_typed_enum
-        $typeName = $this->convertToTypeName($typeClass);
+        $typeName = $this->getExpectedTypeName();
         // like SELF_TYPED_ENUM
         $constantName = strtoupper($typeName);
-        self::assertTrue(defined("$typeClass::$constantName"));
+        self::assertTrue(defined("$typeClass::$constantName"), "Expected constant with type name {$typeClass}::{$constantName}");
         self::assertSame($this->getExpectedTypeName(), $typeName);
         self::assertSame($typeName, constant("$typeClass::$constantName"));
         self::assertSame($type->getName(), $this->getExpectedTypeName());
