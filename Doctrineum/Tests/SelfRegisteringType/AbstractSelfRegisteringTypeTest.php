@@ -1,6 +1,7 @@
 <?php
 namespace Doctrineum\Tests\SelfRegisteringType;
 
+use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Doctrineum\SelfRegisteringType\AbstractSelfRegisteringType;
 use Granam\Tests\Tools\TestWithMockery;
@@ -105,6 +106,35 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
      * @test
      * @expectedException \Doctrineum\SelfRegisteringType\Exceptions\TypeNameOccupied
      */
-    abstract public function I_can_not_accidentally_replace_type_by_another_of_same_name();
+    public function I_can_not_accidentally_replace_type_by_another_of_same_name()
+    {
+        $typeClass = $this->getTypeClass();
+        $typeClass::registerSelf();
+
+        IAmUsingOccupiedName::overloadNameForTestingPurpose($this->getExpectedTypeName());
+        IAmUsingOccupiedName::registerSelf();
+    }
+
+}
+
+/** @inner */
+class IAmUsingOccupiedName extends AbstractSelfRegisteringType
+{
+    private static $overloadedName;
+
+    public static function overloadNameForTestingPurpose($name)
+    {
+        self::$overloadedName = $name;
+    }
+
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    {
+        return '';
+    }
+
+    public function getName()
+    {
+        return self::$overloadedName;
+    }
 
 }
