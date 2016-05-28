@@ -15,6 +15,9 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
     public function I_can_register_it()
     {
         $typeClass = $this->getTypeClass();
+        /** @var Type $instance */
+        $instance = (new \ReflectionClass($typeClass))->newInstanceWithoutConstructor();
+        self::assertSame($this->getExpectedTypeName(), $instance->getName(), 'Expected different name of the type');
         $typeClass::registerSelf();
         self::assertTrue(
             Type::hasType($this->getExpectedTypeName()),
