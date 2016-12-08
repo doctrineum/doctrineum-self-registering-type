@@ -1,7 +1,8 @@
 <?php
-namespace Doctrineum\SelfRegisteringType;
+namespace Doctrineum\Tests\SelfRegisteringType;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
+use Doctrineum\SelfRegisteringType\AbstractSelfRegisteringType;
 
 class JustSomeSelfRegisteringType extends AbstractSelfRegisteringType
 {
