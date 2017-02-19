@@ -26,6 +26,7 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
     }
 
     /**SomeSelfRegisteringTypeTest:
+     *
      * @return AbstractSelfRegisteringType|string
      */
     protected function getTypeClass()
@@ -46,7 +47,7 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
     protected function getExpectedTypeName($typeClass = null)
     {
         // like Doctrineum\Scalar\EnumType = EnumType
-        $baseClassName = preg_replace('~(\w+\\\)*(\w+)~', '$2', $typeClass ?: $this->getTypeClass());
+        $baseClassName = preg_replace('~(\w+\\\){0,6}(\w+)~', '$2', $typeClass ?: $this->getTypeClass());
         // like EnumType = Enum
         $baseTypeName = preg_replace('~Type$~', '', $baseClassName);
 
