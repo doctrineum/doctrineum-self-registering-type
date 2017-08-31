@@ -71,6 +71,9 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
      */
     protected function createSut(): AbstractSelfRegisteringType
     {
+        $typeClass = $this->getTypeClass();
+        $typeClass::registerSelf();
+
         return Type::getType($this->getExpectedTypeName());
     }
 
