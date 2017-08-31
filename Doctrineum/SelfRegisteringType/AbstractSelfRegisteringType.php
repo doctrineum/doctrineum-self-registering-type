@@ -13,7 +13,7 @@ abstract class AbstractSelfRegisteringType extends Type
      * @return bool If enum has not been registered before and was registered now
      * @throws \Doctrine\DBAL\DBALException
      */
-    public static function registerSelf()
+    public static function registerSelf(): bool
     {
         $reflection = new \ReflectionClass(static::class);
         /** @var Type $type */
@@ -33,7 +33,7 @@ abstract class AbstractSelfRegisteringType extends Type
     protected static function checkRegisteredType($typeName)
     {
         $alreadyRegisteredType = static::getType($typeName);
-        if (get_class($alreadyRegisteredType) !== get_called_class()) {
+        if (get_class($alreadyRegisteredType) !== static::class) {
             throw new Exceptions\TypeNameOccupied(
                 'Under type of name ' . ValueDescriber::describe($typeName) .
                 ' is already registered different type ' . get_class($alreadyRegisteredType) . '.'

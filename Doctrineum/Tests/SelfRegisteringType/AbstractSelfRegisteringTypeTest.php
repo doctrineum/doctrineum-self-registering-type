@@ -25,8 +25,7 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
         );
     }
 
-    /**SomeSelfRegisteringTypeTest:
-     *
+    /**
      * @return AbstractSelfRegisteringType|string
      */
     protected function getTypeClass()
@@ -44,7 +43,7 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
      * @param string|null $typeClass
      * @return string
      */
-    protected function getExpectedTypeName($typeClass = null)
+    protected function getExpectedTypeName(string $typeClass = null): string
     {
         // like Doctrineum\Scalar\EnumType = EnumType
         $baseClassName = preg_replace('~(\w+\\\){0,6}(\w+)~', '$2', $typeClass ?: $this->getTypeClass());
@@ -57,23 +56,28 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
 
     /**
      * @test
-     * @depends I_can_register_it
      */
     public function I_can_get_instance()
     {
         $typeClass = $this->getTypeClass();
-        $instance = Type::getType($this->getExpectedTypeName());
+        $instance = $this->createSut();
         self::assertInstanceOf($typeClass, $instance);
 
         return $instance;
     }
 
     /**
-     * @test
-     * @depends I_can_get_instance
-     * @param Type $type
+     * @return AbstractSelfRegisteringType|Type
      */
-    public function I_can_get_expected_type_name(Type $type)
+    private function createSut(): AbstractSelfRegisteringType
+    {
+        return Type::getType($this->getExpectedTypeName());
+    }
+
+    /**
+     * @test
+     */
+    public function I_can_get_expected_type_name()
     {
         $typeClass = $this->getTypeClass();
         $typeName = $this->getExpectedTypeName();
@@ -82,14 +86,14 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
         self::assertTrue(defined("$typeClass::$constantName"), "Expected constant with type name {$typeClass}::{$constantName}");
         self::assertSame($this->getExpectedTypeName(), $typeName);
         self::assertSame($typeName, constant("$typeClass::$constantName"));
-        self::assertSame($type->getName(), $this->getExpectedTypeName());
+        self::assertSame($this->createSut()->getName(), $this->getExpectedTypeName());
     }
 
     /**
      * @param string $className
      * @return string
      */
-    protected function convertToTypeName($className)
+    protected function convertToTypeName(string $className): string
     {
         $withoutType = preg_replace('~Type$~', '', $className);
         $parts = explode('\\', $withoutType);
@@ -103,7 +107,7 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
     /**
      * @return Type|string
      */
-    protected function getRegisteredClass()
+    protected function getRegisteredClass(): string
     {
         return preg_replace('~Type$~', '', $this->getTypeClass());
     }
@@ -128,17 +132,17 @@ class IAmUsingOccupiedName extends AbstractSelfRegisteringType
 {
     private static $overloadedName;
 
-    public static function overloadNameForTestingPurpose($name)
+    public static function overloadNameForTestingPurpose(string $name)
     {
         self::$overloadedName = $name;
     }
 
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
     {
         return '';
     }
 
-    public function getName()
+    public function getName(): string
     {
         return self::$overloadedName;
     }
