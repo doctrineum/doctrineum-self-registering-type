@@ -112,7 +112,10 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
      */
     protected function getRegisteredClass(): string
     {
-        return preg_replace('~Type$~', '', $this->getTypeClass());
+        $registeredClass = preg_replace('~(?:\\\EnumTypes)?(\\\.+)Type$~', '$1', $this->getTypeClass());
+        self::assertTrue(class_exists($registeredClass));
+
+        return $registeredClass;
     }
 
     /**
