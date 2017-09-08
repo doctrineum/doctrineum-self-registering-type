@@ -121,6 +121,7 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
     /**
      * @test
      * @expectedException \Doctrineum\SelfRegisteringType\Exceptions\TypeNameOccupied
+     * @expectedExceptionMessageRegExp ~IAmUsingOccupiedName~
      */
     public function I_can_not_accidentally_replace_type_by_another_of_same_name()
     {

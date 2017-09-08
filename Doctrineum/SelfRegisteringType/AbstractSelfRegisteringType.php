@@ -36,7 +36,8 @@ abstract class AbstractSelfRegisteringType extends Type
         if (get_class($alreadyRegisteredType) !== static::class) {
             throw new Exceptions\TypeNameOccupied(
                 'Under type of name ' . ValueDescriber::describe($typeName) .
-                ' is already registered different type ' . get_class($alreadyRegisteredType) . '.'
+                ' is already registered different type ' . get_class($alreadyRegisteredType)
+                . ' than current ' . static::class . '.'
                 . ' Did you forget to overload Type::getName() method?'
             );
         }
