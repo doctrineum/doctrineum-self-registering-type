@@ -15,6 +15,7 @@ abstract class AbstractSelfRegisteringType extends Type
      */
     public static function registerSelf(): bool
     {
+        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
         $reflection = new \ReflectionClass(static::class);
         /** @var Type $type */
         $type = $reflection->newInstanceWithoutConstructor();
@@ -30,7 +31,7 @@ abstract class AbstractSelfRegisteringType extends Type
         return true;
     }
 
-    protected static function checkRegisteredType($typeName)
+    protected static function checkRegisteredType(string $typeName)
     {
         $alreadyRegisteredType = static::getType($typeName);
         if (get_class($alreadyRegisteredType) !== static::class) {

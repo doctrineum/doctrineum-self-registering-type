@@ -113,9 +113,16 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
     protected function getRegisteredClass(): string
     {
         $registeredClass =  preg_replace('~Type$~', '', $this->getTypeClass());
-        self::assertTrue(class_exists($registeredClass), "Estimated registered enum class {$registeredClass} does not exist");
+        if (class_exists($registeredClass)) {
+            return $registeredClass;
+        }
+        $withoutEnumTypes = preg_replace('~\\\EnumTypes\\\~', '\\', $registeredClass);
+        self::assertTrue(
+            class_exists($withoutEnumTypes),
+            "Estimated registered enum classes {$registeredClass} not {$withoutEnumTypes} do not exist"
+        );
 
-        return $registeredClass;
+        return $withoutEnumTypes;
     }
 
     /**
