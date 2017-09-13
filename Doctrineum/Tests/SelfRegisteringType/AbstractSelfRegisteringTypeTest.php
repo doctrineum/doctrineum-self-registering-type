@@ -33,7 +33,7 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
         $typeClass = preg_replace('~[\\\]Tests([\\\].+)Test$~', '$1', $testClass = static::class);
         self::assertTrue(
             class_exists($typeClass),
-            "Expected Type class {$typeClass} not found"
+            "Expected type class {$typeClass} not found"
         );
 
         return $typeClass;
