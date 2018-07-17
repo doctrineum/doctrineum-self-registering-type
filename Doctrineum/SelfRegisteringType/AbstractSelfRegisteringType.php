@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1); // on PHP 7+ are standard PHP methods strict to types of given parameters
+
 namespace Doctrineum\SelfRegisteringType;
 
 use Doctrine\DBAL\Types\Type;
@@ -15,7 +17,7 @@ abstract class AbstractSelfRegisteringType extends Type
      */
     public static function registerSelf(): bool
     {
-        /** @noinspection ExceptionsAnnotatingAndHandlingInspection */
+        /** @noinspection PhpUnhandledExceptionInspection */
         $reflection = new \ReflectionClass(static::class);
         /** @var Type $type */
         $type = $reflection->newInstanceWithoutConstructor();
@@ -31,13 +33,17 @@ abstract class AbstractSelfRegisteringType extends Type
         return true;
     }
 
-    protected static function checkRegisteredType(string $typeName)
+    /**
+     * @param string $typeName
+     * @throws \Doctrine\DBAL\DBALException
+     */
+    protected static function checkRegisteredType(string $typeName): void
     {
         $alreadyRegisteredType = static::getType($typeName);
-        if (get_class($alreadyRegisteredType) !== static::class) {
+        if (\get_class($alreadyRegisteredType) !== static::class) {
             throw new Exceptions\TypeNameOccupied(
                 'Under type of name ' . ValueDescriber::describe($typeName) .
-                ' is already registered different type ' . get_class($alreadyRegisteredType)
+                ' is already registered different type ' . \get_class($alreadyRegisteredType)
                 . ' than current ' . static::class . '.'
                 . ' Did you forget to overload Type::getName() method?'
             );

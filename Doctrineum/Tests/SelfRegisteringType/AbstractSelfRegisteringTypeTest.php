@@ -1,4 +1,6 @@
 <?php
+declare(strict_types=1); // on PHP 7+ are standard PHP methods strict to types of given parameters
+
 namespace Doctrineum\Tests\SelfRegisteringType;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
@@ -11,8 +13,10 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
 
     /**
      * @test
+     * @throws \ReflectionException
+     * @throws \Doctrine\DBAL\DBALException
      */
-    public function I_can_register_it()
+    public function I_can_register_it(): void
     {
         $typeClass = $this->getTypeClass();
         /** @var Type $instance */
@@ -28,7 +32,7 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
     /**
      * @return AbstractSelfRegisteringType|string
      */
-    protected function getTypeClass()
+    protected function getTypeClass(): string
     {
         $typeClass = preg_replace('~[\\\]Tests([\\\].+)Test$~', '$1', $testClass = static::class);
         self::assertTrue(
@@ -56,6 +60,7 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
 
     /**
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function I_can_get_instance()
     {
@@ -68,6 +73,7 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
 
     /**
      * @return AbstractSelfRegisteringType|Type
+     * @throws \Doctrine\DBAL\DBALException
      */
     protected function createSut(): AbstractSelfRegisteringType
     {
@@ -79,16 +85,17 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
 
     /**
      * @test
+     * @throws \Doctrine\DBAL\DBALException
      */
-    public function I_can_get_expected_type_name()
+    public function I_can_get_expected_type_name(): void
     {
         $typeClass = $this->getTypeClass();
         $typeName = $this->getExpectedTypeName();
         // like SELF_TYPED_ENUM
-        $constantName = strtoupper($typeName);
-        self::assertTrue(defined("$typeClass::$constantName"), "Expected constant with type name {$typeClass}::{$constantName}");
+        $constantName = \strtoupper($typeName);
+        self::assertTrue(\defined("$typeClass::$constantName"), "Expected constant with type name {$typeClass}::{$constantName}");
         self::assertSame($this->getExpectedTypeName(), $typeName);
-        self::assertSame($typeName, constant("$typeClass::$constantName"));
+        self::assertSame($typeName, \constant("$typeClass::$constantName"));
         self::assertSame($this->createSut()->getName(), $this->getExpectedTypeName());
     }
 
@@ -98,13 +105,13 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
      */
     protected function convertToTypeName(string $className): string
     {
-        $withoutType = preg_replace('~Type$~', '', $className);
-        $parts = explode('\\', $withoutType);
+        $withoutType = \preg_replace('~Type$~', '', $className);
+        $parts = \explode('\\', $withoutType);
         $baseClassName = end($parts);
-        preg_match_all('~(?<words>[A-Z][^A-Z]+)~', $baseClassName, $matches);
-        $concatenated = implode('_', $matches['words']);
+        \preg_match_all('~(?<words>[A-Z][^A-Z]+)~', $baseClassName, $matches);
+        $concatenated = \implode('_', $matches['words']);
 
-        return strtolower($concatenated);
+        return \strtolower($concatenated);
     }
 
     /**
@@ -112,13 +119,13 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
      */
     protected function getRegisteredClass(): string
     {
-        $registeredClass =  preg_replace('~Type$~', '', $this->getTypeClass());
-        if (class_exists($registeredClass)) {
+        $registeredClass = \preg_replace('~Type$~', '', $this->getTypeClass());
+        if (\class_exists($registeredClass)) {
             return $registeredClass;
         }
-        $withoutEnumTypes = preg_replace('~\\\EnumTypes\\\~', '\\', $registeredClass);
+        $withoutEnumTypes = \preg_replace('~\\\EnumTypes\\\~', '\\', $registeredClass);
         self::assertTrue(
-            class_exists($withoutEnumTypes),
+            \class_exists($withoutEnumTypes),
             "Estimated registered enum classes {$registeredClass} not {$withoutEnumTypes} do not exist"
         );
 
@@ -129,8 +136,9 @@ abstract class AbstractSelfRegisteringTypeTest extends TestWithMockery
      * @test
      * @expectedException \Doctrineum\SelfRegisteringType\Exceptions\TypeNameOccupied
      * @expectedExceptionMessageRegExp ~IAmUsingOccupiedName~
+     * @throws \Doctrine\DBAL\DBALException
      */
-    public function I_can_not_accidentally_replace_type_by_another_of_same_name()
+    public function I_can_not_accidentally_replace_type_by_another_of_same_name(): void
     {
         $typeClass = $this->getTypeClass();
         $typeClass::registerSelf();
@@ -146,7 +154,7 @@ class IAmUsingOccupiedName extends AbstractSelfRegisteringType
 {
     private static $overloadedName;
 
-    public static function overloadNameForTestingPurpose(string $name)
+    public static function overloadNameForTestingPurpose(string $name): void
     {
         self::$overloadedName = $name;
     }
